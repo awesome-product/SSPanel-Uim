@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controllers;
 
@@ -6,15 +7,16 @@ use App\Models\InviteCode;
 use App\Utils\AliPay;
 use App\Utils\TelegramSessionManager;
 use App\Utils\TelegramProcess;
-use App\Utils\Spay_tool;
 use App\Utils\Geetest;
+use Slim\Http\{ServerRequest, Response};
+use Psr\Http\Message\ResponseInterface;
 
 /**
  *  HomeController
  */
 class HomeController extends BaseController
 {
-    public function index()
+    public function index(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
@@ -40,7 +42,7 @@ class HomeController extends BaseController
             $login_number = '';
         }
 
-        return $this->view()
+        $response->getBody()->write($this->view()
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
@@ -49,81 +51,88 @@ class HomeController extends BaseController
             ->assign('enable_regcaptcha', $_ENV['enable_reg_captcha'])
             ->assign('base_url', $_ENV['baseUrl'])
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
-            ->display('index.tpl');
+            ->fetch('index.tpl'));
+        return $response;
     }
 
-    public function indexold()
+    public function indexold(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('indexold.tpl');
+        $response->getBody()->write($this->view()->fetch('indexold.tpl'));
+        return $response;
     }
 
-    public function code()
+    public function code(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
         $codes = InviteCode::where('user_id', '=', '0')->take(10)->get();
-        return $this->view()->assign('codes', $codes)->display('code.tpl');
+        $response->getBody()->write($this->view()->assign('codes', $codes)->fetch('code.tpl'));
+        return $response;
     }
 
-    public function down()
+    public function tos(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
+        $response->getBody()->write($this->view()->fetch('tos.tpl'));
+        return $response;
     }
 
-    public function tos()
+    public function staff(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('tos.tpl');
+        $response->getBody()->write($this->view()->fetch('staff.tpl'));
+        return $response;
     }
 
-    public function staff()
+    public function telegram(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('staff.tpl');
-    }
-
-    public function telegram($request, $response, $args)
-    {
-        $token = $request->getQueryParams()['token'] ?? '';
+        $token = $request->getQueryParam('token');
 
         if ($token == $_ENV['telegram_request_token']) {
             TelegramProcess::process();
-        } else {
-            echo('不正确请求！');
         }
+        return $response;
     }
 
-    public function page404($request, $response, $args)
+    public function page404(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('404.tpl');
+        $response->getBody()->write($this->view()->fetch('404.tpl'));
+        return $response;
     }
 
-    public function page405($request, $response, $args)
+    public function page405(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('405.tpl');
+        $response->getBody()->write($this->view()->fetch('405.tpl'));
+        return $response;
     }
 
-    public function page500($request, $response, $args)
+    public function page500(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
-        return $this->view()->display('500.tpl');
+        $response->getBody()->write($this->view()->fetch('500.tpl'));
+        return $response;
     }
 
-    public function getOrderList($request, $response, $args)
+    public function getOrderList(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
         $key = $request->getParam('key');
-        if (!$key || $key != $_ENV['key']) {
+        if ($key == null || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->getBody()->write(json_encode($res));
+            $response->getBody()->write(json_encode($res));
+        } else {
+            $response->getBody()->write(json_encode(['data' => AliPay::getList()]));
         }
-        return $response->getBody()->write(json_encode(['data' => AliPay::getList()]));
+        return $response;
     }
 
-    public function setOrder($request, $response, $args)
+    public function setOrder(ServerRequest $request, Response $response, array $args): ResponseInterface
     {
         $key = $request->getParam('key');
         $sn = $request->getParam('sn');
         $url = $request->getParam('url');
-        if (!$key || $key != $_ENV['key']) {
+        if ($key == null || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
-            return $response->getBody()->write(json_encode($res));
+            $response->getBody()->write(json_encode($res));
+        } else {
+            $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
         }
-        return $response->getBody()->write(json_encode(['res' => AliPay::setOrder($sn, $url)]));
+        return $response;
     }
 }
