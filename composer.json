@@ -1,6 +1,6 @@
 {
     "require": {
-        "slim/slim": "~3.0",
+        "slim/slim": "^4.2.0",
         "slim/csrf": "*",
         "smarty/smarty": "3.*",
         "mailgun/mailgun-php": "^2.6.0",
@@ -26,7 +26,10 @@
         "league/omnipay": "^3",
         "lokielse/omnipay-alipay": "*",
         "charlottedunois/yasmin": "*",
-        "khanamiryan/qrcode-detector-decoder": "*"
+        "khanamiryan/qrcode-detector-decoder": "*",
+        "php-di/php-di": "^6.0",
+        "monolog/monolog": "^1.24",
+        "slim/http": "^0.8.0"
     },
     "autoload": {
         "psr-4": {
