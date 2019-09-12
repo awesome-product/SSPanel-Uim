@@ -2,8 +2,6 @@
 
 namespace App\Command;
 
-use App\Services\Config;
-
 class Update
 {
     public static function update($xcat)
@@ -134,7 +132,7 @@ class Update
     {
         if ($version_old <= 0) {
             echo('执行升级：0 -> 1');
-            $conn = mysqli_connect(Config::get('db_host'), Config::get('db_username'), Config::get('db_password'), Config::get('db_database'));
+            $conn = mysqli_connect($_ENV['db_host'], $_ENV['db_username'], $_ENV['db_password'], $_ENV['db_database']);
             mysqli_query($conn, 'ALTER TABLE user ADD discord BIGINT NULL AFTER telegram_id');
         }
     }

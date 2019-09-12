@@ -3,7 +3,6 @@
 namespace App\Utils;
 
 use App\Models\User;
-use App\Services\Config;
 
 class Discord
 {
@@ -30,7 +29,7 @@ class Discord
             }
         });
 
-        $client->login(Config::get('discord_token'))->done();
+        $client->login($_ENV['discord_token'])->done();
         $loop->run();
         echo('���óɹ���' . PHP_EOL);
     }

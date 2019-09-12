@@ -5,7 +5,6 @@ namespace App\Utils;
 use App\Models\User;
 use App\Models\Node;
 use App\Models\Relay;
-use App\Services\Config;
 use App\Controllers\LinkController;
 
 class URL
@@ -243,7 +242,7 @@ class URL
         if (strtotime($user->expire_in) < time()) {
             return $return_url;
         }
-        if (Config::get('mergeSub') == 'true') {
+        if ($_ENV['mergeSub'] == 'true') {
             $items = array_merge(self::getAllItems($user, 1, $is_ss), self::getAllItems($user, 0, $is_ss));
         } else {
             $items = self::getAllItems($user, $is_mu, $is_ss);
@@ -266,7 +265,7 @@ class URL
         if ($is_ss == 2) {
             $personal_info = $item['method'] . ':' . $item['passwd'] . '@' . $item['address'] . ':' . $item['port'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info);
-            $ssurl .= '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark']);
+            $ssurl .= '#' . rawurlencode($_ENV['appName'] . ' - ' . $item['remark']);
         } else {
             $personal_info = $item['method'] . ':' . $item['passwd'];
             $ssurl = 'ss://' . Tools::base64_url_encode($personal_info) . '@' . $item['address'] . ':' . $item['port'];
@@ -284,7 +283,7 @@ class URL
                 }
                 $ssurl .= '?plugin=' . rawurlencode($plugin);
             }
-            $ssurl .= '#' . rawurlencode(Config::get('appName') . ' - ' . $item['remark']);
+            $ssurl .= '#' . rawurlencode($_ENV['appName'] . ' - ' . $item['remark']);
         }
         return $ssurl;
     }
@@ -337,14 +336,14 @@ class URL
             return null;
         }
         $array_all = array();
-        $array_all['airport'] = Config::get('appName');
+        $array_all['airport'] = $_ENV['appName'];
         $array_all['port'] = $user->port;
         $array_all['encryption'] = $user->method;
         $array_all['password'] = $user->passwd;
         $array_all['traffic_used'] = Tools::flowToGB($user->u + $user->d);
         $array_all['traffic_total'] = Tools::flowToGB($user->transfer_enable);
         $array_all['expiry'] = $user->class_expire;
-        $array_all['url'] = Config::get('subUrl') . LinkController::GenerateSSRSubCode($user->id, 0) . '?mu=3';
+        $array_all['url'] = $_ENV['subUrl'] . LinkController::GenerateSSRSubCode($user->id, 0) . '?mu=3';
         $plugin_options = '';
         if (strpos($user->obfs, 'http') != false) {
             $plugin_options = 'obfs=http';
@@ -531,7 +530,7 @@ class URL
             $mu_user->obfs_param = $user->getMuMd5();
             $mu_user->protocol_param = $user->id . ':' . $user->passwd;
             $user = $mu_user;
-            if (Config::get('mergeSub') != 'true') {
+            if ($_ENV['mergeSub'] != 'true') {
                 $node_name .= ' - ' . $mu_port . ' 单端口';
             }
         }
@@ -570,8 +569,8 @@ class URL
         $return_array['passwd'] = $user->passwd;
         $return_array['method'] = $user->method;
         $return_array['remark'] = $node_name;
-        $return_array['group'] = Config::get('appName');
-        if ($mu_port != 0 && Config::get('mergeSub') != 'true') {
+        $return_array['group'] = $_ENV['appName'];
+        if ($mu_port != 0 && $_ENV['mergeSub'] != 'true') {
             $return_array['group'] .= ' - 单端口';
         }
         return $return_array;
@@ -584,8 +583,8 @@ class URL
 
     public static function getUserTraffic($user, $is_mu = 0)
     {
-        $group_name = Config::get('appName');
-        if ($is_mu == 1 && Config::get('mergeSub') != 'true') {
+        $group_name = $_ENV['appName'];
+        if ($is_mu == 1 && $_ENV['mergeSub'] != 'true') {
             $group_name .= ' - 单端口';
         }
         if (strtotime($user->expire_in) > time()) {
@@ -603,8 +602,8 @@ class URL
 
     public static function getUserClassExpiration($user, $is_mu = 0)
     {
-        $group_name = Config::get('appName');
-        if ($is_mu == 1 && Config::get('mergeSub') != 'true') {
+        $group_name = $_ENV['appName'];
+        if ($is_mu == 1 && $_ENV['mergeSub'] != 'true') {
             $group_name .= ' - 单端口';
         }
         if (strtotime($user->expire_in) > time()) {

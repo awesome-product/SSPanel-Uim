@@ -11,7 +11,6 @@ namespace App\Utils;
 
 use App\Services\View;
 use App\Services\Auth;
-use App\Services\Config;
 use App\Models\User;
 use App\Models\Code;
 use App\Models\Paylist;
@@ -23,21 +22,21 @@ class DoiAMPay
 
     public static function render()
     {
-        return View::getSmarty()->assign('enabled', Config::get('doiampay')['enabled'])->fetch('user/doiam.tpl');
+        return View::getSmarty()->assign('enabled', $_ENV['doiampay']['enabled'])->fetch('user/doiam.tpl');
     }
 
     public function handle($request, $response, $args)
     {
         $type = $request->getParam('type');
         $price = $request->getParam('price');
-        if (Config::get('doiampay')['enabled'][$type] == 0) {
+        if ($_ENV['doiampay']['enabled'][$type] == 0) {
             return json_encode(['errcode' => -1, 'errmsg' => '非法的支付方式.']);
         }
         if ($price <= 0) {
             return json_encode(['errcode' => -1, 'errmsg' => '非法的金额.']);
         }
         $user = Auth::getUser();
-        $settings = Config::get('doiampay')['mchdata'][$type];
+        $settings = $_ENV['doiampay']['mchdata'][$type];
         $pl = new Paylist();
         $pl->userid = $user->id;
         $pl->total = $price;
@@ -47,8 +46,8 @@ class DoiAMPay
             'price' => $price,
             'phone' => $settings['phone'],
             'mchid' => $settings['mchid'],
-            'subject' => Config::get('appName') . '充值' . $price . '元',
-            'body' => Config::get('appName') . '充值' . $price . '元',
+            'subject' => $_ENV['appName'] . '充值' . $price . '元',
+            'body' => $_ENV['appName'] . '充值' . $price . '元',
             'type' => 'Mod',
         ];
         $data = DoiAM::sign($data, $settings['token']);
@@ -88,7 +87,7 @@ HTML;
         $invoiceid = $order_data['out_trade_no'];     //订单号
         $transid = $order_data['trade_no'];       //转账交易号
         $amount = $order_data['money'];          //获取递过来的总价格
-        if (!DoiAM::checksign($_POST, Config::get('doiampay')['mchdata'][$args['type']]['token'])) {
+        if (!DoiAM::checksign($_POST, $_ENV['doiampay']['mchdata'][$args['type']]['token'])) {
             return json_encode(array('errcode' => 2333));
         }
         if ($status == 'success') {
@@ -111,13 +110,13 @@ HTML;
             $codeq->save();
             if ($user->ref_by != '' && $user->ref_by != 0 && $user->ref_by != null) {
                 $gift_user = User::where('id', '=', $user->ref_by)->first();
-                $gift_user->money += ($codeq->number * (Config::get('code_payback') / 100));
+                $gift_user->money += ($codeq->number * ($_ENV['code_payback'] / 100));
                 $gift_user->save();
                 $Payback = new Payback();
                 $Payback->total = $codeq->number;
                 $Payback->userid = $user->id;
                 $Payback->ref_by = $user->ref_by;
-                $Payback->ref_get = $codeq->number * (Config::get('code_payback') / 100);
+                $Payback->ref_get = $codeq->number * ($_ENV['code_payback'] / 100);
                 $Payback->datetime = time();
                 $Payback->save();
             }

@@ -2,7 +2,6 @@
 
 namespace App\Services\Mail;
 
-use App\Services\Config;
 use App\Services\Aws\Factory;
 
 class Ses extends Base
@@ -16,7 +15,7 @@ class Ses extends Base
 
     public function getSender()
     {
-        return Config::get('aws_ses_sender');
+        return $_ENV['aws_ses_sender'];
     }
 
     public function send($to, $subject, $text)

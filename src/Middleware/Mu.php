@@ -1,9 +1,7 @@
 <?php
 
-
 namespace App\Middleware;
 
-use App\Services\Config;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use App\Utils\Helper;
@@ -22,7 +20,7 @@ class Mu
         }
 
         $auth = false;
-        $keyset = explode(',', Config::get('muKey'));
+        $keyset = explode(',', $_ENV['muKey']);
         foreach ($keyset as $sinkey) {
             if ($key == $sinkey) {
                 $auth = true;

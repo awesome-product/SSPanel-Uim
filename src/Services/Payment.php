@@ -16,7 +16,7 @@ class Payment
 {
     public static function getClient()
     {
-        $method = Config::get('payment_system');
+        $method = $_ENV['payment_system'];
         switch ($method) {
             case ('codepay'):
                 return new Codepay();
@@ -31,9 +31,9 @@ class Payment
             case ('chenAlipay'):
                 return new ChenPay();
             case ('trimepay'):
-                return new TrimePay(Config::get('trimepay_secret'));
+                return new TrimePay($_ENV['trimepay_secret']);
             case ('payjs'):
-                return new PAYJS(Config::get('payjs_key'));
+                return new PAYJS($_ENV['payjs_key']);
             default:
                 return null;
         }

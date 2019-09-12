@@ -2,7 +2,6 @@
 
 namespace App\Services\Mail;
 
-use App\Services\Config;
 use SendGrid\Attachment;
 use SendGrid\Content;
 use SendGrid\Email;
@@ -24,8 +23,8 @@ class SendGrid extends Base
     public function getConfig()
     {
         return [
-            'key' => Config::get('sendgrid_key'),
-            'sender' => Config::get('sendgrid_sender')
+            'key' => $_ENV['sendgrid_key'],
+            'sender' => $_ENV['sendgrid_sender']
         ];
     }
 

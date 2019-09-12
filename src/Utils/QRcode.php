@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use App\Services\Config;
 use Zxing\QrReader;
 use ZBarCodeImage;
 use ZBarCodeScanner;
@@ -11,7 +10,7 @@ class QRcode
 {
     public static function decode($url)
     {
-        switch (Config::get('qrcode')) {
+        switch ($_ENV['qrcode']) {
             case 'phpzbar':
                 return self::phpzbar_decode($url);
             case 'online':

@@ -12,7 +12,7 @@ class Factory
 {
     public static function createAuth()
     {
-        $method = Config::get('authDriver');
+        $method = $_ENV['authDriver'];
         switch ($method) {
             case 'cookie':
                 return new Cookie();
@@ -34,7 +34,7 @@ class Factory
 
     public static function createTokenStorage()
     {
-        switch (Config::get('tokenDriver')) {
+        switch ($_ENV['tokenDriver']) {
             case 'db':
                 return new DB();
             case 'dynamodb':

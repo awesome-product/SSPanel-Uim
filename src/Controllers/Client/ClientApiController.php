@@ -14,7 +14,6 @@ use App\Controllers\LinkController;
 use App\Models\Ann;
 use App\Models\User;
 use App\Services\Auth;
-use App\Services\Config;
 use App\Services\Factory;
 use App\Utils\Helper;
 
@@ -66,7 +65,7 @@ class ClientApiController extends BaseController
         }
         $res['ret'] = 1;
         $res['msg'] = 'ok';
-        $res['data'] = Config::get('subUrl') . $ssr_sub_token . '?mu=' . $mu;
+        $res['data'] = $_ENV['subUrl'] . $ssr_sub_token . '?mu=' . $mu;
         return $this->echoJson($response, $res);
     }
 }

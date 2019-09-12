@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\InviteCode;
-use App\Services\Config;
 use App\Utils\AliPay;
 use App\Utils\TelegramSessionManager;
 use App\Utils\TelegramProcess;
@@ -19,10 +18,10 @@ class HomeController extends BaseController
     {
         $GtSdk = null;
         $recaptcha_sitekey = null;
-        if (Config::get('captcha_provider') != '') {
-            switch (Config::get('captcha_provider')) {
+        if ($_ENV['captcha_provider'] != '') {
+            switch ($_ENV['captcha_provider']) {
                 case 'recaptcha':
-                    $recaptcha_sitekey = Config::get('recaptcha_sitekey');
+                    $recaptcha_sitekey = $_ENV['recaptcha_sitekey'];
                     break;
                 case 'geetest':
                     $uid = time() . random_int(1, 10000);
@@ -31,7 +30,7 @@ class HomeController extends BaseController
             }
         }
 
-        if (Config::get('enable_telegram') == 'true') {
+        if ($_ENV['enable_telegram'] == 'true') {
             $login_text = TelegramSessionManager::add_login_session();
             $login = explode('|', $login_text);
             $login_token = $login[0];
@@ -45,10 +44,10 @@ class HomeController extends BaseController
             ->assign('geetest_html', $GtSdk)
             ->assign('login_token', $login_token)
             ->assign('login_number', $login_number)
-            ->assign('telegram_bot', Config::get('telegram_bot'))
-            ->assign('enable_logincaptcha', Config::get('enable_login_captcha'))
-            ->assign('enable_regcaptcha', Config::get('enable_reg_captcha'))
-            ->assign('base_url', Config::get('baseUrl'))
+            ->assign('telegram_bot', $_ENV['telegram_bot'])
+            ->assign('enable_logincaptcha', $_ENV['enable_login_captcha'])
+            ->assign('enable_regcaptcha', $_ENV['enable_reg_captcha'])
+            ->assign('base_url', $_ENV['baseUrl'])
             ->assign('recaptcha_sitekey', $recaptcha_sitekey)
             ->display('index.tpl');
     }
@@ -82,7 +81,7 @@ class HomeController extends BaseController
     {
         $token = $request->getQueryParams()['token'] ?? '';
 
-        if ($token == Config::get('telegram_request_token')) {
+        if ($token == $_ENV['telegram_request_token']) {
             TelegramProcess::process();
         } else {
             echo('不正确请求！');
@@ -107,7 +106,7 @@ class HomeController extends BaseController
     public function getOrderList($request, $response, $args)
     {
         $key = $request->getParam('key');
-        if (!$key || $key != Config::get('key')) {
+        if (!$key || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
             return $response->getBody()->write(json_encode($res));
@@ -120,7 +119,7 @@ class HomeController extends BaseController
         $key = $request->getParam('key');
         $sn = $request->getParam('sn');
         $url = $request->getParam('url');
-        if (!$key || $key != Config::get('key')) {
+        if (!$key || $key != $_ENV['key']) {
             $res['ret'] = 0;
             $res['msg'] = '错误';
             return $response->getBody()->write(json_encode($res));

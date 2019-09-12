@@ -10,7 +10,6 @@ namespace App\Services\Gateway;
 
 use App\Services\View;
 use App\Services\Auth;
-use App\Services\Config;
 use App\Models\Paylist;
 
 class TrimePay extends AbstractPayment
@@ -105,12 +104,12 @@ class TrimePay extends AbstractPayment
         $pl->save();
 
 
-        $data['appId'] = Config::get('trimepay_appid');
+        $data['appId'] = $_ENV['trimepay_appid'];
         $data['payType'] = $type;
         $data['merchantTradeNo'] = $pl->tradeno;
         $data['totalFee'] = (float)$price * 100;
-        $data['notifyUrl'] = Config::get('baseUrl') . '/payment/notify';
-        $data['returnUrl'] = Config::get('baseUrl') . '/user/payment/return';
+        $data['notifyUrl'] = $_ENV['baseUrl'] . '/payment/notify';
+        $data['returnUrl'] = $_ENV['baseUrl'] . '/user/payment/return';
         $params = $this->prepareSign($data);
         $data['sign'] = $this->sign($params);
         switch ($type) {
@@ -126,7 +125,7 @@ class TrimePay extends AbstractPayment
 
     public function query($tradeNo)
     {
-        $data['appId'] = Config::get('trimepay_appid');
+        $data['appId'] = $_ENV['trimepay_appid'];
         $data['merchantTradeNo'] = $tradeNo;
         $params = $this->prepareSign($data);
         $data['sign'] = $this->sign($params);
@@ -158,7 +157,7 @@ class TrimePay extends AbstractPayment
 
     public function refund($merchantTradeNo)
     {
-        $data['appId'] = Config::get('trimepay_appid');
+        $data['appId'] = $_ENV['trimepay_appid'];
         $data['merchantTradeNo'] = $merchantTradeNo;
         $params = $this->prepareSign($data);
         $data['sign'] = $this->sign($params);

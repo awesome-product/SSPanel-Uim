@@ -5,7 +5,6 @@ namespace App\Command;
 
 use App\Models\User;
 use App\Models\Ann;
-use App\Services\Config;
 use App\Services\Mail;
 use App\Utils\Telegram;
 use App\Utils\Tools;
@@ -34,7 +33,7 @@ class DailyMail
 
             if ($user->sendDailyMail == 1) {
                 echo 'Send daily mail to user: ' . $user->id;
-                $subject = Config::get('appName') . '-每日流量报告以及公告';
+                $subject = $_ENV['appName'] . '-每日流量报告以及公告';
                 $to = $user->email;
                 $text = '下面是系统中目前的公告:<br><br>' . $text1 . '<br><br>晚安！';
 

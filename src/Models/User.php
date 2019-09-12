@@ -8,7 +8,6 @@ namespace App\Models;
 
 use App\Utils\Tools;
 use App\Utils\Hash;
-use App\Services\Config;
 use App\Utils\GA;
 use App\Utils\QQWry;
 use App\Utils\Radius;
@@ -56,7 +55,7 @@ class User extends Model
 
     public function getMuMd5()
     {
-        $str = str_replace(array('%id', '%suffix'), array($this->attributes['id'], Config::get('mu_suffix')), Config::get('mu_regex'));
+        $str = str_replace(array('%id', '%suffix'), array($this->attributes['id'], $_ENV['mu_suffix']), $_ENV['mu_regex']);
         preg_match_all("|%-?[1-9]\d*m|U", $str, $matches, PREG_PATTERN_ORDER);
         foreach ($matches[0] as $key) {
             $key_match = str_replace(array('%', 'm'), '', $key);
@@ -199,7 +198,7 @@ class User extends Model
     public function getGAurl()
     {
         $ga = new GA();
-        $url = $ga->getUrl(urlencode(Config::get('appName') . '-' . $this->attributes['user_name'] . '-两步验证码'), $this->attributes['ga_token']);
+        $url = $ga->getUrl(urlencode($_ENV['appName'] . '-' . $this->attributes['user_name'] . '-两步验证码'), $this->attributes['ga_token']);
         return $url;
     }
 

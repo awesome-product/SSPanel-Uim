@@ -8,7 +8,7 @@ class Boot
 {
     public static function setDebug()
     {
-        define('DEBUG', Config::get('debug'));
+        define('DEBUG', $_ENV['debug']);
         View::$beginTime = microtime(true);
     }
 
@@ -20,7 +20,7 @@ class Boot
     public static function setTimezone()
     {
         // config time zone
-        date_default_timezone_set(Config::get('timeZone'));
+        date_default_timezone_set($_ENV['timeZone']);
     }
 
     public static function bootDb()
@@ -28,7 +28,7 @@ class Boot
         // Init Eloquent ORM Connection
         $capsule = new Capsule();
         $capsule->addConnection(Config::getDbConfig());
-        if (Config::get('enable_radius') == 'true') {
+        if ($_ENV['enable_radius'] == 'true') {
             $capsule->addConnection(Config::getRadiusDbConfig(), 'radius');
         }
         $capsule->bootEloquent();

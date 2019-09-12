@@ -8,7 +8,6 @@ use App\Utils\Telegram;
 use App\Utils\Tools;
 use App\Controllers\AdminController;
 use App\Utils\CloudflareDriver;
-use App\Services\Config;
 use Ozdemir\Datatables\Datatables;
 use App\Utils\DatatablesHelper;
 
@@ -84,8 +83,8 @@ class NodeController extends AdminController
 
         $node->save();
 
-        $domain_name = explode('.' . Config::get('cloudflare_name'), $node->server);
-        if (Config::get('cloudflare_enable') == 'true') {
+        $domain_name = explode('.' . $_ENV['cloudflare_name'], $node->server);
+        if ($_ENV['cloudflare_enable'] == 'true') {
             CloudflareDriver::updateRecord($domain_name[0], $node->node_ip);
         }
 
