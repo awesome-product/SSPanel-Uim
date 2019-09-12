@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\View;
 use App\Services\Auth;
 use Smarty;
+use Slim\Http\Response;
 
 /**
  * BaseController
@@ -40,13 +41,15 @@ class BaseController
     {
         return $this->view;
     }
+
     /**
-     * @param $response
-     * @param $res
-     * @return mixed
+     * Write $res as json to response body
+     *
+     * @param mixed $res
      */
-    public function echoJson($response, $res)
+    public function echoJson(Response $response, $res): Response
     {
-        return $response->getBody()->write(json_encode($res));
+        $response->getBody()->write(json_encode($res));
+        return $response;
     }
 }
