@@ -29,7 +29,8 @@
         "khanamiryan/qrcode-detector-decoder": "*",
         "php-di/php-di": "^6.0",
         "monolog/monolog": "^1.24",
-        "slim/http": "^0.8.0"
+        "slim/http": "^0.8.0",
+        "slim/psr7": "^0.5"
     },
     "autoload": {
         "psr-4": {
